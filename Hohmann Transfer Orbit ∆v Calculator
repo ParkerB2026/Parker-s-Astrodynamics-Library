@@ -1,0 +1,141 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.patches import Circle
+
+#Hohmann Transfer ∆v Calculator by Parker Bailey
+#Message
+print("""Hohmann Transfer ∆v Calculator by Parker Bailey
+
+""")
+#Planet Data
+planet_data = {
+    "Sun": {"mass": 1.9891e30, "radius": 6.96e8, "color": "yellow"},
+    "Mercury": {"mass":3.3011e23, "radius": 2439.7, "color": "gray"},
+    "Venus":{"mass": 4.8675e24, "radius": 6051.8, "color": "yellow"},
+    "Earth": {"mass": 5.97237e24, "radius": 6371.0, "color": "dodgerblue"},
+    "Mars": {"mass": 6.4171e23, "radius": 3389.5, "color": "red"},
+    "Jupiter": {"mass": 1.8982e27, "radius": 69911.0, "color": "orange"},
+    "Saturn": {"mass": 5.6834e26, "radius": 58232.0, "color": "gold"},
+    "Uranus": {"mass": 8.6810e25, "radius": 25362.0, "color": "paleturquoise"},
+    "Neptune": {"mass": 1.02413e26, "radius": 24622.0, "color": "royalblue"}
+}
+
+#Message
+print("""Input Values
+
+Planetary Information
+""")
+
+#Planet Input
+planet_name = input("Primary Body: ").capitalize()
+
+#Fetch planet mass and radius
+if planet_name in planet_data:
+    #Assign mass, radius, and color to variables
+    m = planet_data[planet_name] ["mass"] 
+    r = planet_data[planet_name] ["radius"] * 1000
+    color_planet = planet_data[planet_name]["color"]
+
+    print(f"The mass of {planet_name} is {m} kg.")
+    print(f"The radius of {planet_name} is {r} m.")
+else:
+    print("Planet not found. Please enter a valid planet name.")
+
+#orbital Values
+G = 6.67e-11
+µ = G * m #Gravitational Parameter for Earth
+
+#Message
+print("""
+Orbital Information
+""")
+#Orbital Inputs
+r_p_a = float(input("Periapsis of orbit A: "))
+r_a_a = float(input("Apoapsis of Orbit A: "))
+r_p_b = float(input("Semi-major axis of Orbit B (circular orbit): "))
+
+if r_p_a > r_a_a:
+    
+
+#Calculated Values
+
+a_a = (r_p_a + r_a_a) / 2#Semi-major axis of orbit A
+
+a_t = (r_p_a + r_p_b) / 2 #Semi-major axis of transfer orbit
+
+a_b = r_p_b #Semi-major axis of orbit B (target orbit)
+
+e_a = (r_a_a - r_p_a) / (r_a_a + r_p_a)
+
+e_t = (r_p_b - r_p_a) / (r_p_b + r_p_a)
+
+e_b = 0
+
+v_a_i = (µ * ((2 / r_p_a) - (1 / a_a))) ** 0.5 #Velocity at burn position of orbit A
+
+v_a_t = (µ * ((2 / r_p_a) - (1 / a_t))) ** 0.5 #Velocity at burn point of transfer orbit
+
+delta_v_t = v_a_t - v_a_i #Difference of orbit A and transfer orbit velocity at burn point: ∆v required
+
+v_p_b = (µ * ((2 / r_p_b) - (1 / a_t))) ** 0.5 #Velocity at orbit B semi-major distance
+
+v_b = (µ / a_b) ** 0.5 #Circular velocity of orbit B
+
+delta_v_c = v_b - v_p_b #Difference of transfer orbit and target orbit (circular): ∆v required
+
+#Print
+print(e_a)
+print(e_b)
+print(e_t)
+print(v_a_i)
+print(v_a_t)
+print(v_p_b)
+print(v_b)
+print(delta_v_t)
+print(delta_v_c)
+
+#Graphing
+
+#Subplot 1: Trajectory
+
+theta = np.linspace(0, 2 * np.pi, 1000) # Defining theta input
+
+fig, ax = plt.subplots(figsize=(10, 8), subplot_kw={'polar': True})
+
+#Orbit A
+o_a = (a_a * (1 - e_a**2)) / (1 + e_a * np.cos(theta))
+ax.plot(theta, o_a, color='black', linestyle='-', label=f'Ellipse 1: a={a_a}, e={e_a}')
+
+#Transfer Orbit
+o_t = (a_t * (1 - e_t**2)) / (1 + e_t * np.cos(theta))
+ax.plot(theta, o_t, color='red', linestyle='--', label=f'Ellipse 2: a={a_t}, e={e_t}')
+
+#Orbit B
+o_b = (a_b * (1 - e_b**2)) / (1 + e_b * np.cos(theta))
+ax.plot(theta, o_b, color='black', linestyle='-', label=f'Ellipse 3: a={a_b}, e={e_b}')
+
+#Primary body
+theta_circle = np.linspace(0, 2 * np.pi, 1000)
+
+r_circle = np.ones_like(theta_circle) * r
+
+ax.fill(theta_circle, r_circle, color=color_planet, linestyle='-', linewidth=1, label=f'{planet_name}: r={r} meters')
+
+# Customize the plot
+ax.set_title('Ellipses and Solid Circle in Polar Coordinates')
+ax.legend()
+
+# Show the plot
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
